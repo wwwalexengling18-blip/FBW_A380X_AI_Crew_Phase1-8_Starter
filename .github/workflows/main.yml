@@ -25,19 +25,31 @@ jobs:
           pip install pyinstaller
 
       - name: Portable EXE bauen
+        shell: cmd
         run: |
-          pyinstaller --onefile --name A380X_AI tools/run_ai.py
+         if exist "tools\run_ai.py" (
+          pyinstaller --onefile --name A380X_AI tools\run_ai.py
+          ) else (
+           pyinstaller --onefile --name A380X_AI FBW_A380X_AI_Crew_Phase1-8_Starter\tools\run_ai.py
+    )
 
       - name: Inno Setup installieren
         run: |
           choco install innosetup -y --no-progress
 
       - name: Installer bauen
-        run: |
-          "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer/A380X_AI_Setup.iss
+  shell: cmd
+  run: |
+    if exist "Installateur\A380X_AI_Setup.iss" (
+      "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "Installateur\A380X_AI_Setup.iss"
+    ) else (
+      "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "FBW_A380X_AI_Crew_Phase1-8_Starter\Installateur\A380X_AI_Setup.iss"
+    )
 
-      - name: Artifact hochladen
-        uses: actions/upload-artifact@v4
-        with:
-          name: A380X_AI_Setup
-          path: installer/Output
+      - name: Artefakt hochladen
+  uses: actions/upload-artifact@v4
+  with:
+    name: A380X_AI_Setup
+    path: |
+      Installateur/Output
+      FBW_A380X_AI_Crew_Phase1-8_Starter/Installateur/Output
