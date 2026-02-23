@@ -1,0 +1,32 @@
+app:
+  name: A380X_AICrew
+  version: 0.1.0
+
+paths:
+  # Community-Ordner wird vom Doctor über UserCfg.opt erkannt.
+  # Falls nötig, kannst du ihn hier manuell eintragen.
+  community_folder: ""
+  wasim_ui_path: ""
+  wasim_sdk_path: ""
+  user_tools_root: '%USERPROFILE%\\Documents\\FBW_A380_Tools'
+
+sim:
+  # auto -> startet diesen Starter aktuell in Dummy-Modus, bis echtes Mapping ergänzt ist
+  # dummy -> nur Demo/Test
+  backend: "auto"
+  read_hz: 10
+  write_hz: 5
+  startup_delay_sec: 15
+
+automation:
+  auto_complete_manual_steps: true
+  stop_on_timeout: false
+
+features:
+  ecam_monitor: true
+  gsx_hooks: true
+  checklists: true
+  hotas_virtual_joystick: false
+
+sop:
+  active_file: "fbw_a380x_gate_to_gate.yaml"

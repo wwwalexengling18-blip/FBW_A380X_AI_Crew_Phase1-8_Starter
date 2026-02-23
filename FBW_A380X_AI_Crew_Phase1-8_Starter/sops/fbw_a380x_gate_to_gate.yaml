@@ -1,0 +1,291 @@
+meta:
+  aircraft: "FBW A380X"
+  profile: "Gate-to-Gate SOP Baseline"
+  version: "0.1.0"
+  simulation_only: true
+
+phases:
+  - id: preflight_cold_dark
+    title: "Cold & Dark / Cockpit Vorbereitung"
+    steps:
+      - id: pf_001
+        title: "Aircraft-Status bestätigen"
+        description: "Cold & Dark, Parkposition, Chocks/Gate-Zustand prüfen."
+        action: { kind: "noop", name: "confirm_cold_dark" }
+        condition: { mode: "manual" }
+      - id: pf_002
+        title: "Parking Brake prüfen"
+        action: { kind: "event", name: "PARKING_BRAKES", value: 1 }
+        condition: { mode: "sensor", key: "parking_brake", equals: true }
+      - id: pf_003
+        title: "Externe Stromversorgung prüfen"
+        action: { kind: "noop", name: "check_external_power" }
+        condition: { mode: "manual" }
+      - id: pf_004
+        title: "Batteries / Initial Power Up"
+        action: { kind: "noop", name: "battery_powerup" }
+        condition: { mode: "timer", seconds: 2 }
+      - id: pf_005
+        title: "ADIRS/IRS Initialisierung starten"
+        action: { kind: "noop", name: "init_irs" }
+        condition: { mode: "manual" }
+      - id: pf_006
+        title: "MCDU/FMS Grunddaten laden"
+        action: { kind: "noop", name: "fms_basic_init" }
+        condition: { mode: "manual" }
+      - id: pf_007
+        title: "ECAM Initial Checks"
+        action: { kind: "noop", name: "ecam_initial_scan" }
+        condition: { mode: "manual" }
+
+  - id: turnaround_power
+    title: "Turnaround Strom / APU / Services"
+    steps:
+      - id: tu_001
+        title: "APU Master EIN"
+        action: { kind: "fbw_event", name: "apu_master_on" }
+        condition: { mode: "sensor", key: "apu_master", equals: true }
+      - id: tu_002
+        title: "APU Start"
+        action: { kind: "fbw_event", name: "apu_start" }
+        condition: { mode: "timer", seconds: 3 }
+      - id: tu_003
+        title: "APU AVAIL prüfen"
+        action: { kind: "noop", name: "apu_avail_check" }
+        condition: { mode: "manual" }
+      - id: tu_004
+        title: "External Power Transfer / GPU nach Bedarf"
+        action: { kind: "noop", name: "power_transfer" }
+        condition: { mode: "manual" }
+      - id: tu_005
+        title: "Fuel / Payload / Boarding Sync"
+        action: { kind: "noop", name: "loadsheet_sync" }
+        condition: { mode: "manual" }
+      - id: tu_006
+        title: "Pushback-Freigabe / GSX Bereitschaft"
+        action: { kind: "noop", name: "gsx_ready" }
+        condition: { mode: "manual" }
+
+  - id: before_start
+    title: "Before Start"
+    steps:
+      - id: bs_001
+        title: "Beacon EIN"
+        action: { kind: "fbw_event", name: "beacon_on" }
+        condition: { mode: "sensor", key: "beacon_on", equals: true }
+      - id: bs_002
+        title: "Doors / Slides / GSX Status prüfen"
+        action: { kind: "noop", name: "doors_slides_check" }
+        condition: { mode: "manual" }
+      - id: bs_003
+        title: "Pushback / Engine Start Reihenfolge briefen"
+        action: { kind: "noop", name: "push_engine_brief" }
+        condition: { mode: "manual" }
+      - id: bs_004
+        title: "Nosewheel Steering / Pushback Prep"
+        action: { kind: "noop", name: "nosewheel_push_prep" }
+        condition: { mode: "manual" }
+
+  - id: engine_start
+    title: "Engine Start"
+    steps:
+      - id: es_001
+        title: "Engine Masters ON (as required)"
+        action: { kind: "fbw_event", name: "engine_masters_on" }
+        condition: { mode: "sensor", key: "engines_running", equals: true }
+      - id: es_002
+        title: "Engine Parameters stabil prüfen"
+        action: { kind: "noop", name: "engine_stability_check" }
+        condition: { mode: "timer", seconds: 2 }
+      - id: es_003
+        title: "Generators / Bleeds / Packs konfigurieren"
+        action: { kind: "noop", name: "post_start_systems" }
+        condition: { mode: "manual" }
+      - id: es_004
+        title: "Anti-Ice nach Wetter prüfen"
+        action: { kind: "noop", name: "anti_ice_eval" }
+        condition: { mode: "manual" }
+
+  - id: before_taxi
+    title: "Before Taxi"
+    steps:
+      - id: bt_001
+        title: "Flight Controls Check"
+        action: { kind: "noop", name: "flight_controls_check" }
+        condition: { mode: "manual" }
+      - id: bt_002
+        title: "Flaps für Takeoff setzen"
+        action: { kind: "fbw_event", name: "flaps_takeoff" }
+        condition: { mode: "sensor", key: "flaps_config", min_value: 1 }
+      - id: bt_003
+        title: "Spoilers ARM"
+        action: { kind: "fbw_event", name: "spoilers_arm" }
+        condition: { mode: "sensor", key: "spoilers_armed", equals: true }
+      - id: bt_004
+        title: "Auto Brake / T.O. Config"
+        action: { kind: "noop", name: "to_config" }
+        condition: { mode: "manual" }
+      - id: bt_005
+        title: "Taxi Briefing"
+        action: { kind: "noop", name: "taxi_briefing" }
+        condition: { mode: "manual" }
+
+  - id: taxi_out
+    title: "Taxi Out"
+    steps:
+      - id: tx_001
+        title: "Parking Brake lösen"
+        action: { kind: "event", name: "PARKING_BRAKES", value: 0 }
+        condition: { mode: "sensor", key: "parking_brake", equals: false }
+      - id: tx_002
+        title: "Taxi Leistung / Rollbeginn"
+        action: { kind: "noop", name: "taxi_roll_start" }
+        condition: { mode: "timer", seconds: 2 }
+      - id: tx_003
+        title: "Brake Check"
+        action: { kind: "noop", name: "brake_check" }
+        condition: { mode: "manual" }
+      - id: tx_004
+        title: "Taxi Speed Monitoring"
+        action: { kind: "noop", name: "taxi_speed_monitor" }
+        condition: { mode: "manual" }
+      - id: tx_005
+        title: "Before Takeoff Lineup Brief"
+        action: { kind: "noop", name: "before_takeoff_brief" }
+        condition: { mode: "manual" }
+
+  - id: takeoff
+    title: "Takeoff / Initial Climb"
+    steps:
+      - id: tk_001
+        title: "Takeoff Thrust Set"
+        action: { kind: "noop", name: "set_takeoff_thrust" }
+        condition: { mode: "sensor", key: "ias_kt", min_value: 80 }
+      - id: tk_002
+        title: "100kts / V1 / VR / Rotate Callouts"
+        action: { kind: "noop", name: "takeoff_callouts" }
+        condition: { mode: "sensor", key: "ias_kt", min_value: 140 }
+      - id: tk_003
+        title: "Positive Climb"
+        action: { kind: "noop", name: "positive_climb_check" }
+        condition: { mode: "sensor", key: "on_ground", equals: false }
+      - id: tk_004
+        title: "Gear UP"
+        action: { kind: "fbw_event", name: "gear_up" }
+        condition: { mode: "sensor", key: "gear_down", equals: false }
+      - id: tk_005
+        title: "Acceleration Altitude / Flap Retraction"
+        action: { kind: "fbw_event", name: "flaps_up_schedule" }
+        condition: { mode: "sensor", key: "flaps_config", equals: 0 }
+
+  - id: climb_cruise
+    title: "Climb / Cruise"
+    steps:
+      - id: cc_001
+        title: "Autopilot / Managed Modes nach SOP"
+        action: { kind: "noop", name: "ap_managed_modes" }
+        condition: { mode: "sensor", key: "ap1_on", equals: true }
+      - id: cc_002
+        title: "Seat Belts nach Bedarf"
+        action: { kind: "fbw_event", name: "seatbelts_on" }
+        condition: { mode: "sensor", key: "seatbelts_on", equals: true }
+      - id: cc_003
+        title: "Climb Checklist"
+        action: { kind: "noop", name: "climb_checklist" }
+        condition: { mode: "manual" }
+      - id: cc_004
+        title: "Cruise Monitoring / ECAM / Fuel"
+        action: { kind: "noop", name: "cruise_monitoring" }
+        condition: { mode: "timer", seconds: 3 }
+      - id: cc_005
+        title: "Approach Preparation"
+        action: { kind: "noop", name: "approach_prep" }
+        condition: { mode: "manual" }
+
+  - id: descent
+    title: "Descent / Arrival"
+    steps:
+      - id: ds_001
+        title: "Descent Initiation"
+        action: { kind: "noop", name: "descent_start" }
+        condition: { mode: "sensor", key: "altitude_ft", max_value: 10000 }
+      - id: ds_002
+        title: "Arrival / STAR / Speed Constraints überwachen"
+        action: { kind: "noop", name: "star_monitor" }
+        condition: { mode: "manual" }
+      - id: ds_003
+        title: "Seat Belts ON"
+        action: { kind: "fbw_event", name: "seatbelts_on" }
+        condition: { mode: "sensor", key: "seatbelts_on", equals: true }
+      - id: ds_004
+        title: "Landing Data / Briefing"
+        action: { kind: "noop", name: "landing_briefing" }
+        condition: { mode: "manual" }
+
+  - id: approach_landing
+    title: "Approach / Landing"
+    steps:
+      - id: al_001
+        title: "Approach Config setzen (Flaps/Gear nach Plan)"
+        action: { kind: "noop", name: "approach_config" }
+        condition: { mode: "sensor", key: "gear_down", equals: true }
+      - id: al_002
+        title: "Final Checklist"
+        action: { kind: "noop", name: "final_checklist" }
+        condition: { mode: "manual" }
+      - id: al_003
+        title: "Landing / Rollout"
+        action: { kind: "noop", name: "landing_rollout" }
+        condition: { mode: "sensor", key: "on_ground", equals: true }
+      - id: al_004
+        title: "Reverse / Decel / Manual Rollout Control"
+        action: { kind: "noop", name: "rollout_decel" }
+        condition: { mode: "timer", seconds: 2 }
+
+  - id: taxi_in
+    title: "Taxi In"
+    steps:
+      - id: ti_001
+        title: "Spoilers disarm / Flaps retract"
+        action: { kind: "fbw_event", name: "after_landing_cleanup" }
+        condition: { mode: "sensor", key: "flaps_config", max_value: 1 }
+      - id: ti_002
+        title: "APU Start (falls nötig)"
+        action: { kind: "fbw_event", name: "apu_master_on" }
+        condition: { mode: "sensor", key: "apu_master", equals: true }
+      - id: ti_003
+        title: "Taxi to Gate"
+        action: { kind: "noop", name: "taxi_in_guidance" }
+        condition: { mode: "manual" }
+      - id: ti_004
+        title: "Parking Brake setzen am Gate"
+        action: { kind: "event", name: "PARKING_BRAKES", value: 1 }
+        condition: { mode: "sensor", key: "parking_brake", equals: true }
+
+  - id: shutdown
+    title: "Shutdown / Secure Aircraft"
+    steps:
+      - id: sd_001
+        title: "Engines OFF"
+        action: { kind: "fbw_event", name: "engine_masters_off" }
+        condition: { mode: "sensor", key: "engines_running", equals: false }
+      - id: sd_002
+        title: "Beacon OFF"
+        action: { kind: "fbw_event", name: "beacon_off" }
+        condition: { mode: "sensor", key: "beacon_on", equals: false }
+      - id: sd_003
+        title: "Seat Belts OFF"
+        action: { kind: "fbw_event", name: "seatbelts_off" }
+        condition: { mode: "sensor", key: "seatbelts_on", equals: false }
+      - id: sd_004
+        title: "External Power / GPU Transfer"
+        action: { kind: "noop", name: "external_power_transfer" }
+        condition: { mode: "manual" }
+      - id: sd_005
+        title: "IRS / Batteries nach Turnaround-Status"
+        action: { kind: "noop", name: "cold_dark_or_turnaround" }
+        condition: { mode: "manual" }
+      - id: sd_006
+        title: "Post-Flight Log schreiben"
+        action: { kind: "noop", name: "write_flight_log" }
+        condition: { mode: "timer", seconds: 1 }

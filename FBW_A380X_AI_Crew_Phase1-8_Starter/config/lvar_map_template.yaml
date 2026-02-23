@@ -1,0 +1,37 @@
+# Kopiere diese Datei nach lvar_map.yaml und trage deine verifizierten FBW A380X LVars/H-Events ein.
+# Die Namen sind Beispiele/Platzhalter und müssen mit WASimUI/WASimCommander verifiziert werden.
+# Ohne korrektes Mapping bleiben FBW-spezifische Aktionen nur "logisch" (SOP-Ablauf), aber schalten nichts im Cockpit.
+
+meta:
+  aircraft: "FBW A380X"
+  notes:
+    - "Mit WASimUI prüfen: LVars, H-Events, Custom Key Events"
+    - "Nur verifizierte Namen eintragen"
+    - "Änderungen nach FBW-Updates erneut prüfen"
+
+events:
+  beacon_on: "PLACEHOLDER_EVENT_BEACON_ON"
+  beacon_off: "PLACEHOLDER_EVENT_BEACON_OFF"
+  seatbelts_on: "PLACEHOLDER_EVENT_SEATBELTS_ON"
+  seatbelts_off: "PLACEHOLDER_EVENT_SEATBELTS_OFF"
+  apu_master_on: "PLACEHOLDER_EVENT_APU_MASTER_ON"
+  apu_start: "PLACEHOLDER_EVENT_APU_START"
+  engine1_master_on: "PLACEHOLDER_EVENT_ENG1_MASTER_ON"
+  engine2_master_on: "PLACEHOLDER_EVENT_ENG2_MASTER_ON"
+  engine3_master_on: "PLACEHOLDER_EVENT_ENG3_MASTER_ON"
+  engine4_master_on: "PLACEHOLDER_EVENT_ENG4_MASTER_ON"
+  spoilers_arm: "PLACEHOLDER_EVENT_SPOILERS_ARM"
+  flaps_1: "PLACEHOLDER_EVENT_FLAPS_1"
+  flaps_2: "PLACEHOLDER_EVENT_FLAPS_2"
+  flaps_3: "PLACEHOLDER_EVENT_FLAPS_3"
+  flaps_up: "PLACEHOLDER_EVENT_FLAPS_UP"
+  gear_up: "PLACEHOLDER_EVENT_GEAR_UP"
+  gear_down: "PLACEHOLDER_EVENT_GEAR_DOWN"
+
+lvars:
+  apu_available: "L:PLACEHOLDER_APU_AVAILABLE"
+  engines_running_count: "L:PLACEHOLDER_ENGINES_RUNNING_COUNT"
+  gsx_boarding_done: "L:PLACEHOLDER_GSX_BOARDING_DONE"
+  doors_closed: "L:PLACEHOLDER_DOORS_CLOSED"
+  gpu_connected: "L:PLACEHOLDER_GPU_CONNECTED"
+  irs_aligned: "L:PLACEHOLDER_IRS_ALIGNED"
